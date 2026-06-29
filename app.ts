@@ -5,15 +5,6 @@ export function createApp() {
   const app = express();
   app.use(express.json());
 
-  const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-    httpOptions: {
-      headers: {
-        'User-Agent': 'aistudio-build',
-      }
-    }
-  });
-
   app.post("/api/generate-search-filters", async (req, res) => {
     try {
       const { targetDescription } = req.body;
@@ -21,6 +12,20 @@ export function createApp() {
       if (!targetDescription) {
         return res.status(400).json({ error: "Target description is required." });
       }
+
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey || apiKey.trim() === "" || apiKey === "MY_GEMINI_API_KEY") {
+        return res.status(401).json({ error: "Gemini API Key is missing on the server. Please add GEMINI_API_KEY to your Vercel Environment Variables." });
+      }
+
+      const ai = new GoogleGenAI({
+        apiKey: apiKey,
+        httpOptions: {
+          headers: {
+            'User-Agent': 'aistudio-build',
+          }
+        }
+      });
 
       const systemInstruction = `You are an elite B2B Data Strategist and Lead Generation Architect specializing in advanced outbound sourcing techniques. Your objective is to translate an informal, messy target description from a user into structured, hyper-optimized search parameters for LinkedIn Standard and LinkedIn Sales Navigator.
 
@@ -101,6 +106,20 @@ Generate the structured LinkedIn search parameters and Boolean search string bas
       if (!prospectName || !prospectTitle || !companyName || !companyValueProp || !senderName || !senderCompany || !senderValueProp || !rawLinkedInActivity || !outreachGoal) {
         return res.status(400).json({ error: "All input fields are required." });
       }
+
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey || apiKey.trim() === "" || apiKey === "MY_GEMINI_API_KEY") {
+        return res.status(401).json({ error: "Gemini API Key is missing on the server. Please add GEMINI_API_KEY to your Vercel Environment Variables." });
+      }
+
+      const ai = new GoogleGenAI({
+        apiKey: apiKey,
+        httpOptions: {
+          headers: {
+            'User-Agent': 'aistudio-build',
+          }
+        }
+      });
 
       const systemInstruction = `You are an elite B2B Growth Marketer and Senior SDR specializing in hyper-personalized, ultra-short cold outreach. Your sole purpose is to analyze a prospect's recent LinkedIn activity and company profile to write an outbound email that achieves an exceptionally high response rate.
 
