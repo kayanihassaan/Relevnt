@@ -85,7 +85,10 @@ Generate the structured LinkedIn search parameters and Boolean search string bas
       res.json(data);
     } catch (error: any) {
       console.error("Error generating LinkedIn search parameters:", error);
-      res.status(500).json({ error: error.message || "Failed to generate search parameters." });
+      res.status(500).json({
+        error: error.message || "Failed to generate search parameters.",
+        details: error.status ? `Status: ${error.status}. Raw: ${JSON.stringify(error)}` : error.toString()
+      });
     }
   });
 
@@ -227,7 +230,10 @@ Generate exactly 2 distinct, highly creative, and highly personalized email vari
       res.json(data);
     } catch (error: any) {
       console.error("Error generating outreach emails:", error);
-      res.status(500).json({ error: error.message || "Failed to generate personalized outreach emails." });
+      res.status(500).json({
+        error: error.message || "Failed to generate personalized outreach emails.",
+        details: error.status ? `Status: ${error.status}. Raw: ${JSON.stringify(error)}` : error.toString()
+      });
     }
   });
 

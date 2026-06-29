@@ -169,7 +169,10 @@ export default function App() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Generation request failed");
+        const msg = errorData.details
+          ? `${errorData.error} (Details: ${errorData.details})`
+          : (errorData.error || "Generation request failed");
+        throw new Error(msg);
       }
 
       const data = await response.json();
@@ -203,7 +206,10 @@ export default function App() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Generation request failed");
+        const msg = errorData.details
+          ? `${errorData.error} (Details: ${errorData.details})`
+          : (errorData.error || "Generation request failed");
+        throw new Error(msg);
       }
 
       const data = await response.json();
