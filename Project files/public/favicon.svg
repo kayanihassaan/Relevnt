@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <!-- Thick wave representing the main pulse -->
-  <path d="M2 16 Q 9 4, 16 16 T 30 16" stroke="#0ed5c9" stroke-width="4" stroke-linecap="round" />
-  <!-- Thinner wave representing the secondary pulse -->
-  <path d="M6 20 Q 11 11, 16 20 T 26 20" stroke="#0ed5c9" stroke-width="2" stroke-linecap="round" opacity="0.75" />
-</svg>
