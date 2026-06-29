@@ -18,7 +18,8 @@ import {
   ArrowRight,
   Edit,
   Save,
-  RefreshCw
+  RefreshCw,
+  X
 } from "lucide-react";
 
 interface RevealProps {
@@ -63,6 +64,42 @@ function Reveal({ children, direction = "left" }: RevealProps) {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<"sourcing" | "outreach">("sourcing");
+
+  // PWA configurations
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+  const [showIosTooltip, setShowIosTooltip] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    // Detect iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    // Check if running in standalone PWA mode
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+    if (isIOS && !isStandalone) {
+      setShowIosTooltip(true);
+    }
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User responded to the install prompt with: ${outcome}`);
+    setDeferredPrompt(null);
+    setShowInstallBtn(false);
+  };
 
   // Step 1: Sourcing States
   const [sourcingInputs, setSourcingInputs] = useState<GeneratorInputs>({
@@ -243,10 +280,39 @@ export default function App() {
               </div>
             </div>
           </div>
+          
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {showInstallBtn && (
+              <button
+                onClick={handleInstallClick}
+                className="px-3 py-1.5 text-xs bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg shadow-xs transition-all hover:scale-[1.03] active:scale-[0.97] cursor-pointer"
+              >
+                Install App
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="main-container">
+        
+        {/* iOS installation tip */}
+        {showIosTooltip && (
+          <div className="mb-6 bg-[#0c4a6e]/20 border border-[#0284c7]/40 rounded-2xl p-4 flex items-center justify-between gap-3 text-xs text-[#0ea5e9] shrink-0" id="ios-pwa-tooltip">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 shrink-0 text-[#38bdf8]" />
+              <span>
+                <strong>iOS PWA Tip:</strong> Tap the <strong>Share</strong> icon in Safari, then select <strong>Add to Home Screen</strong> to install this tool.
+              </span>
+            </div>
+            <button
+              onClick={() => setShowIosTooltip(false)}
+              className="text-[#0ea5e9] hover:text-[#38bdf8] p-1 cursor-pointer rounded-lg hover:bg-sky-950/40 transition-all"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
         
         {/* Navigation Tabs */}
         <div className="flex border-b border-[#292524] mb-8 gap-4" id="workflow-tabs">
